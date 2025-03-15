@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Services Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, #fff);
+        }
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            cursor: pointer;
+        }
+        .tab.active {
+            border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-color, #2481cc);
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .service-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .service-card:hover {
+            transform: translateY(-3px);
+        }
+        .service-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .service-card.coming-soon {
+            opacity: 0.7;
+            position: relative;
+        }
+        .coming-soon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: #fff;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 10px;
+        }
+        .btn {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: var(--tg-theme-button-color, #1a68a3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--tg-theme-button-color, #2481cc);
+            border: 1px solid var(--tg-theme-button-color, #2481cc);
+        }
+        .service-detail {
+            display: none;
+        }
+        .crypto-balance {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+        }
+        .referral-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .referral-code {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 5px;
+        }
+        .points-display {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .referral-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .convert-options {
+            display: none;
+            margin-top: 15px;
+        }
+        .referral-list {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Digital Services</h1>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="services">Services</div>
+            <div class="tab" data-tab="wallet">Wallet</div>
+            <div class="tab" data-tab="referrals">Referrals</div>
+        </div>
+        
+        <!-- Services Tab -->
+        <div id="services-tab" class="tab-content active">
+            <div class="crypto-balance">
+                <div class="balance-container">
+                    <div>
+                        <h3>Wallet Balance</h3>
+                        <p>0.00 USDT</p>
+                    </div>
+                    <button class="btn" id="topupBtn">Top Up</button>
+                </div>
+            </div>
+            
+            <div class="services">
+                <div class="service-card" data-service="data">
+                    <img src="/api/placeholder/50/50" alt="Mobile Data">
+                    <h3>Mobile Data</h3>
+                </div>
+                <div class="service-card" data-service="airtime">
+                    <img src="/api/placeholder/50/50" alt="Airtime">
+                    <h3>Airtime</h3>
+                </div>
+                <div class="service-card" data-service="electricity">
+                    <img src="/api/placeholder/50/50" alt="Electricity">
+                    <h3>Electricity</h3>
+                </div>
+                <div class="service-card" data-service="tv">
+                    <img src="/api/placeholder/50/50" alt="TV Subscription">
+                    <h3>TV Subscription</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="Crypto Swap">
+                    <h3>Crypto Swap</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="P2P Trading">
+                    <h3>P2P Trading</h3>
+                </div>
+            </div>
+            
+            <!-- Service Detail Sections -->
+            <div id="dataService" class="service-detail">
+                <h2>Buy Mobile Data</h2>
+                <form id="dataForm">
+                    <select name="provider" class="input">
+                        <option value="">Select Provider</option>
+                        <option value="provider1">Provider 1</option>
+                        <option value="provider2">Provider 2</option>
+                    </select>
+                    <input type="tel" placeholder="Phone Number" class="input">
+                    <select name="package" class="input">
+                        <option value="">Select Package</option>
+                        <option value="1gb">1GB - $5</option>
+                        <option value="5gb">5GB - $20</option>
+                        <option value="10gb">10GB - $35</option>
+                    </select>
+                    <button type="submit" class="btn">Buy Now</button>
+                </form>
+            </div>
+            
+            <!-- Other service details would go here -->
+        </div>
+        
+        <!-- Wallet Tab -->
+        <div id="wallet-tab" class="tab-content">
+            <div class="crypto-balance">
+                <h3>Your Balances</h3>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>USDT</p>
+                        <p>0.00</p>
+                    </div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>TON</p>
+                        <p>0.00</p>
+                    </div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>PRV</p>
+                        <p>0.00</p>
+                    </div>
+                </div>
+                <button class="btn" id="depositBtn">Deposit</button>
+                <button class="btn btn-outline" id="withdrawBtn">Withdraw</button>
+            </div>
+            
+            <h3>Transaction History</h3>
+            <div class="transaction-history">
+                <p>No transactions yet</p>
+            </div>
+        </div>
+        
+        <!-- Referrals Tab -->
+        <div id="referrals-tab" class="tab-content">
+            <div class="referral-card">
+                <h3>Your Referral Code</h3>
+                <div class="referral-code">ABC123</div>
+                <p>Share this code with friends. When they sign up, you both earn points!</p>
+                <button class="btn" id="shareBtn">Share Your Code</button>
+            </div>
+            
+            <div class="referral-card">
+                <h3>Referral Points</h3>
+                <div class="points-display">
+                    <span id="pointsBalance">0</span> Points
+                </div>
+                <div class="referral-actions">
+                    <button class="btn" id="convertBtn">Convert Points</button>
+                    <button class="btn btn-outline" id="enterCodeBtn">Enter Code</button>
+                </div>
+                
+                <div id="convertOptions" class="convert-options">
+                    <h4>Convert to:</h4>
+                    <select id="convertType" class="input">
+                        <option value="PLATFORM_CREDIT">Platform Credit</option>
+                        <option value="USDT">USDT</option>
+                        <option value="TON">TON</option>
+                        <option value="PRV">PRV (Payriva Token)</option>
+                    </select>
+                    <input type="number" id="pointsToConvert" placeholder="Amount of points" class="input">
+                    <button class="btn" id="confirmConvertBtn">Convert</button>
+                </div>
+                
+                <div id="enterCode" class="convert-options">
+                    <h4>Enter Referral Code:</h4>
+                    <input type="text" id="referralCode" placeholder="Enter code" class="input">
+                    <button class="btn" id="confirmCodeBtn">Submit</button>
+                </div>
+            </div>
+            
+            <div class="referral-card">
+                <h3>Your Referrals</h3>
+                <div class="referral-list" id="referralsList">
+                    <p>You haven't referred anyone yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to selected tab and content
+                tab.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Service cards functionality
+        const serviceCards = document.querySelectorAll('.service-card:not(.coming-soon)');
+        const serviceDetails = document.querySelectorAll('.service-detail');
+        
+        serviceCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const service = card.getAttribute('data-service');
+                if (!service) return;
+                
+                // Hide all service details
+                serviceDetails.forEach(detail => {
+                    detail.style.display = 'none';
+                });
+                
+                // Show selected service detail
+                const serviceDetail = document.getElementById(service + 'Service');
+                if (serviceDetail) {
+                    serviceDetail.style.display = 'block';
+                }
+            });
+        });
+        
+        // Coming soon cards show message
+        const comingSoonCards = document.querySelectorAll('.service-card.coming-soon');
+        comingSoonCards.forEach(card => {
+            card.addEventListener('click', () => {
+                tg.showPopup({
+                    title: "Coming Soon",
+                    message: "This feature is coming soon! We're working hard to make it available.",
+                    buttons: [{type: "ok"}]
+                });
+            });
+        });
+        
+        // Wallet functionality
+        document.getElementById('topupBtn').addEventListener('click', () => {
+            tg.showAlert('Crypto deposit address: 0x123...abc');
+        });
+        
+        // Referral functionality
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            tg.showPopup({
+                title: "Share Your Referral Code",
+                message: "Share your referral code ABC123 with friends and earn rewards when they sign up!",
+                buttons: [
+                    {type: "ok", id: "copy", text: "Copy Code"},
+                    {type: "cancel"}
+                ]
+            }, function(buttonId) {
+                if (buttonId === "copy") {
+                    // In a real implementation, this would copy to clipboard
+                    tg.showAlert('Code copied to clipboard!');
+                }
+            });
+        });
+        
+        // Convert points button
+        document.getElementById('convertBtn').addEventListener('click', () => {
+            const convertOptions = document.getElementById('convertOptions');
+            const enterCode = document.getElementById('enterCode');
+            
+            enterCode.style.display = 'none';
+            convertOptions.style.display = convertOptions.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Enter code button
+        document.getElementById('enterCodeBtn').addEventListener('click', () => {
+            const convertOptions = document.getElementById('convertOptions');
+            const enterCode = document.getElementById('enterCode');
+            
+            convertOptions.style.display = 'none';
+            enterCode.style.display = enterCode.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Handle form submission
+        const dataForm = document.getElementById('dataForm');
+        if (dataForm) {
+            dataForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // This is where you would integrate with your backend
+                tg.showAlert('Transaction initiated. Please confirm payment.');
+            });
+        }
+        
+        // Confirm convert button
+        document.getElementById('confirmConvertBtn').addEventListener('click', () => {
+            const points = document.getElementById('pointsToConvert').value;
+            const type = document.getElementById('convertType').value;
+            
+            if (!points || points <= 0) {
+                tg.showAlert('Please enter a valid number of points');
+                return;
+            }
+            
+            // This would integrate with your backend
+            tg.showAlert(`Converting ${points} points to ${type}...`);
+        });
+        
+        // Confirm referral code button
+        document.getElementById('confirmCodeBtn').addEventListener('click', () => {
+            const code = document.getElementById('referralCode').value;
+            
+            if (!code) {
+                tg.showAlert('Please enter a referral code');
+                return;
+            }
+            
+            // This would integrate with your backend
+            tg.showAlert(`Applying referral code: ${code}`);
+        });
+    </script>
+</body>
+</html>
