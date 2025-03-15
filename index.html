@@ -155,6 +155,51 @@
         .referral-list {
             margin-top: 15px;
         }
+        .wallet-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .wallet-option {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .wallet-option:hover {
+            transform: translateY(-3px);
+        }
+        .wallet-option img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        .wallet-connect-form {
+            display: none;
+            margin-top: 15px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+        }
+        .deposit-form {
+            margin-top: 15px;
+        }
+        .connected-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -255,8 +300,41 @@
                         <p>0.00</p>
                     </div>
                 </div>
-                <button class="btn" id="depositBtn">Deposit</button>
-                <button class="btn btn-outline" id="withdrawBtn">Withdraw</button>
+                <div id="walletStatus">
+                    <p>Wallet Status: <span id="connectionStatus">Not Connected</span></p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" id="connectWalletBtn">Connect Wallet</button>
+                    <button class="btn btn-outline" id="withdrawBtn">Withdraw</button>
+                </div>
+            </div>
+            
+            <!-- Connect Wallet Options -->
+            <div id="connectWalletOptions" class="wallet-connect-form">
+                <h3>Connect Your Wallet</h3>
+                <div class="wallet-options">
+                    <div class="wallet-option" id="tonConnect">
+                        <img src="/api/placeholder/60/60" alt="TON Connect">
+                        <h3>TON Wallet</h3>
+                    </div>
+                    <div class="wallet-option" id="tonkeeperConnect">
+                        <img src="/api/placeholder/60/60" alt="Tonkeeper">
+                        <h3>Tonkeeper</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Deposit Form (shown after connecting wallet) -->
+            <div id="depositForm" class="wallet-connect-form">
+                <h3>Deposit Funds</h3>
+                <div class="deposit-form">
+                    <select id="depositCurrency" class="input">
+                        <option value="TON">TON</option>
+                        <option value="USDT">USDT</option>
+                    </select>
+                    <input type="number" id="depositAmount" placeholder="Amount" class="input">
+                    <button class="btn" id="confirmDepositBtn">Deposit</button>
+                </div>
             </div>
             
             <h3>Transaction History</h3>
@@ -317,6 +395,17 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         
+        // Mock data for wallet state
+        let walletState = {
+            connected: false,
+            address: '',
+            balances: {
+                USDT: 0,
+                TON: 0,
+                PRV: 0
+            }
+        };
+        
         // Tab functionality
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -369,9 +458,170 @@
             });
         });
         
-        // Wallet functionality
+        // Top up button functionality
         document.getElementById('topupBtn').addEventListener('click', () => {
-            tg.showAlert('Crypto deposit address: 0x123...abc');
+            // Navigate to wallet tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            document.querySelector('.tab[data-tab="wallet"]').classList.add('active');
+            document.getElementById('wallet-tab').classList.add('active');
+            
+            // Show connect wallet options if not connected
+            if (!walletState.connected) {
+                document.getElementById('connectWalletOptions').style.display = 'block';
+            } else {
+                document.getElementById('depositForm').style.display = 'block';
+            }
+        });
+        
+        // Connect wallet button
+        document.getElementById('connectWalletBtn').addEventListener('click', () => {
+            if (walletState.connected) {
+                // If already connected, show disconnect confirmation
+                tg.showPopup({
+                    title: "Disconnect Wallet",
+                    message: "Are you sure you want to disconnect your wallet?",
+                    buttons: [
+                        {type: "destructive", id: "disconnect", text: "Disconnect"},
+                        {type: "cancel"}
+                    ]
+                }, function(buttonId) {
+                    if (buttonId === "disconnect") {
+                        disconnectWallet();
+                    }
+                });
+            } else {
+                // Show connect wallet options
+                document.getElementById('connectWalletOptions').style.display = 'block';
+                document.getElementById('depositForm').style.display = 'none';
+            }
+        });
+        
+        // TON Connect functionality
+        document.getElementById('tonConnect').addEventListener('click', () => {
+            // Simulate connecting to TON wallet
+            tg.showPopup({
+                title: "TON Connect",
+                message: "Connecting to TON Wallet...",
+                buttons: [{type: "ok"}]
+            }, function() {
+                // After user acknowledges, simulate successful connection
+                connectWallet("0xTON123...abc");
+            });
+        });
+        
+        // Tonkeeper Connect functionality
+        document.getElementById('tonkeeperConnect').addEventListener('click', () => {
+            // Simulate connecting to Tonkeeper
+            tg.showPopup({
+                title: "Tonkeeper Connect",
+                message: "Connecting to Tonkeeper...",
+                buttons: [{type: "ok"}]
+            }, function() {
+                // After user acknowledges, simulate successful connection
+                connectWallet("0xTK456...def");
+            });
+        });
+        
+        // Function to handle wallet connection
+        function connectWallet(address) {
+            walletState.connected = true;
+            walletState.address = address;
+            
+            // Update UI to show connected state
+            document.getElementById('connectionStatus').textContent = "Connected";
+            document.getElementById('connectionStatus').classList.add('connected-badge');
+            document.getElementById('connectWalletBtn').textContent = "Disconnect";
+            
+            // Hide connect options and show deposit form
+            document.getElementById('connectWalletOptions').style.display = 'none';
+            document.getElementById('depositForm').style.display = 'block';
+            
+            // Show success message
+            tg.showAlert(`Wallet connected successfully: ${address.substring(0, 6)}...${address.substring(address.length - 4)}`);
+        }
+        
+        // Function to handle wallet disconnection
+        function disconnectWallet() {
+            walletState.connected = false;
+            walletState.address = '';
+            
+            // Update UI to show disconnected state
+            document.getElementById('connectionStatus').textContent = "Not Connected";
+            document.getElementById('connectionStatus').classList.remove('connected-badge');
+            document.getElementById('connectWalletBtn').textContent = "Connect Wallet";
+            
+            // Hide deposit form
+            document.getElementById('depositForm').style.display = 'none';
+            
+            // Show notification
+            tg.showAlert("Wallet disconnected");
+        }
+        
+        // Confirm deposit button
+        document.getElementById('confirmDepositBtn').addEventListener('click', () => {
+            const amount = document.getElementById('depositAmount').value;
+            const currency = document.getElementById('depositCurrency').value;
+            
+            if (!amount || amount <= 0) {
+                tg.showAlert('Please enter a valid amount');
+                return;
+            }
+            
+            // This would integrate with TON wallet in a real implementation
+            tg.showPopup({
+                title: "Confirm Deposit",
+                message: `Deposit ${amount} ${currency} to your wallet?`,
+                buttons: [
+                    {type: "ok", id: "confirm", text: "Confirm"},
+                    {type: "cancel"}
+                ]
+            }, function(buttonId) {
+                if (buttonId === "confirm") {
+                    // Simulate processing deposit
+                    setTimeout(() => {
+                        // Update balances
+                        walletState.balances[currency] += parseFloat(amount);
+                        updateBalanceDisplay();
+                        
+                        // Show success message
+                        tg.showAlert(`Successfully deposited ${amount} ${currency}`);
+                    }, 1500);
+                }
+            });
+        });
+        
+        // Update balance display
+        function updateBalanceDisplay() {
+            const balanceItems = document.querySelectorAll('.balance-item');
+            balanceItems.forEach((item, index) => {
+                const currencyText = item.querySelector('p:first-child').textContent;
+                const currency = currencyText.trim();
+                const balanceText = item.querySelector('p:last-child');
+                
+                if (currency in walletState.balances) {
+                    balanceText.textContent = walletState.balances[currency].toFixed(2);
+                }
+            });
+            
+            // Update main display balance
+            const mainBalance = document.querySelector('.crypto-balance .balance-container p:last-child');
+            mainBalance.textContent = walletState.balances.USDT.toFixed(2) + " USDT";
+        }
+        
+        // Withdraw button
+        document.getElementById('withdrawBtn').addEventListener('click', () => {
+            if (!walletState.connected) {
+                tg.showAlert('Please connect your wallet first');
+                return;
+            }
+            
+            tg.showPopup({
+                title: "Withdraw Funds",
+                message: "Withdrawal functionality is coming soon!",
+                buttons: [{type: "ok"}]
+            });
         });
         
         // Referral functionality
