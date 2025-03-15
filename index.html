@@ -697,4 +697,72 @@
         });
     </script>
 </body>
+
+// In your frontend JavaScript
+
+// Function to handle wallet connection
+async function connectWallet(address) {
+  try {
+    // Call your backend API
+    const response = await fetch('https://your-backend-url.com/api/connect-wallet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ walletAddress: address })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // Update UI to show connected state
+      walletState.connected = true;
+      walletState.address = address;
+      
+      document.getElementById('connectionStatus').textContent = "Connected";
+      document.getElementById('connectionStatus').classList.add('connected-badge');
+      document.getElementById('connectWalletBtn').textContent = "Disconnect";
+      
+      // Show deposit form
+      document.getElementById('connectWalletOptions').style.display = 'none';
+      document.getElementById('depositForm').style.display = 'block';
+      
+      tg.showAlert(`Wallet connected successfully: ${address.substring(0, 6)}...${address.substring(address.length - 4)}`);
+    }
+  } catch (error) {
+    tg.showAlert(`Connection failed: ${error.message}`);
+  }
+}
+
+// Function to process deposits
+async function processDeposit(amount, currency) {
+  try {
+    const response = await fetch('https://your-backend-url.com/api/deposit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        walletAddress: walletState.address,
+        amount: parseFloat(amount),
+        currency
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      // Update balances
+      walletState.balances[currency] = data.balance;
+      updateBalanceDisplay();
+      
+      tg.showAlert(`Successfully deposited ${amount} ${currency}`);
+    } else {
+      tg.showAlert(`Deposit failed: ${data.error}`);
+    }
+  } catch (error) {
+    tg.showAlert(`Deposit failed: ${error.message}`);
+  }
+}
+    
 </html>
