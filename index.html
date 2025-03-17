@@ -6,40 +6,420 @@
     <title>Payriva Digital Services</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Existing styles remain unchanged */
+        /* Restore original styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, #fff);
+        }
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .ads-panel {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            cursor: pointer;
+        }
+        .tab.active {
+            border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-color, #2481cc);
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .service-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .service-card:hover {
+            transform: translateY(-3px);
+        }
+        .service-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .service-card.coming-soon {
+            opacity: 0.7;
+            position: relative;
+        }
+        .coming-soon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: #fff;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 10px;
+        }
+        .btn {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: var(--tg-theme-button-color, #1a68a3);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--tg-theme-button-color, #2481cc);
+            border: 1px solid var(--tg-theme-button-color, #2481cc);
+        }
+        .service-detail {
+            display: none;
+        }
+        .crypto-balance {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+        }
+        .referral-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .referral-code {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 5px;
+        }
+        .points-display {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .referral-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .convert-options {
+            display: none;
+            margin-top: 15px;
+        }
+        .referral-list {
+            margin-top: 15px;
+        }
+        .wallet-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .wallet-option {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .wallet-option:hover {
+            transform: translateY(-3px);
+        }
+        .wallet-option img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        .wallet-connect-form {
+            display: none;
+            margin-top: 15px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+        }
+        .deposit-form {
+            margin-top: 15px;
+        }
+        .connected-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .currency-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+        .login-required {
+            text-align: center;
+            padding: 30px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header, ads panel, tabs, and services section -->
-        <!-- All existing HTML remains unchanged -->
+        <!-- Header -->
+        <div class="header">
+            <img src="/api/placeholder/150/50" alt="Payriva Logo" class="logo">
+        </div>
+        <div class="ads-panel">
+            Buy airtime, data, and pay bills with TON, USDT, and NOTcoin. Fast and secure!
+        </div>
+        <div class="tab-container">
+            <div class="tab active" data-tab="services">Services</div>
+            <div class="tab" data-tab="wallet">Wallet</div>
+            <div class="tab" data-tab="referrals">Referrals</div>
+        </div>
 
-        <!-- Data Subscription Form -->
-        <div id="dataService" class="service-detail">
-            <h2>Buy Mobile Data</h2>
-            <form id="dataForm">
-                <select name="provider" class="input" id="dataProvider">
-                    <option value="">Select Provider</option>
-                    <option value="MTN">MTN</option>
-                    <option value="Airtel">Airtel</option>
-                    <option value="Glo">Glo</option>
-                    <option value="9mobile">9Mobile</option>
-                </select>
-                <input type="tel" placeholder="Phone Number" class="input" id="dataPhone">
-                <select name="package" class="input" id="dataPackage">
-                    <option value="">Select Package</option>
-                </select>
-                <div class="currency-info">
-                    <span>Price: <span id="dataPriceNGN">0</span> NGN</span>
-                    <span>≈ <span id="dataPriceCrypto">0</span> <span id="selectedCurrency">USDT</span></span>
+        <!-- Services Tab -->
+        <div id="services-tab" class="tab-content active">
+            <div class="crypto-balance">
+                <div class="balance-container">
+                    <div>
+                        <h3>Wallet Balance</h3>
+                        <p id="mainBalance">0.00 USDT</p>
+                    </div>
+                    <button class="btn" id="topupBtn">Top Up</button>
                 </div>
-                <select name="paymentMethod" class="input" id="dataPaymentMethod">
-                    <option value="USDT">Pay with USDT</option>
-                    <option value="TON">Pay with TON</option>
-                    <option value="NOTcoin">Pay with NOTcoin</option>
-                </select>
-                <button type="submit" class="btn">Buy Now</button>
-            </form>
+            </div>
+            <div class="services">
+                <div class="service-card" data-service="data">
+                    <img src="/api/placeholder/50/50" alt="Mobile Data">
+                    <h3>Mobile Data</h3>
+                </div>
+                <div class="service-card" data-service="airtime">
+                    <img src="/api/placeholder/50/50" alt="Airtime">
+                    <h3>Airtime</h3>
+                </div>
+                <div class="service-card" data-service="electricity">
+                    <img src="/api/placeholder/50/50" alt="Electricity">
+                    <h3>Electricity</h3>
+                </div>
+                <div class="service-card" data-service="tv">
+                    <img src="/api/placeholder/50/50" alt="TV Subscription">
+                    <h3>TV Subscription</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="Crypto Swap">
+                    <h3>Crypto Swap</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="P2P Trading">
+                    <h3>P2P Trading</h3>
+                </div>
+            </div>
+            <!-- Service Detail Sections -->
+            <div id="dataService" class="service-detail">
+                <h2>Buy Mobile Data</h2>
+                <form id="dataForm">
+                    <select name="provider" class="input" id="dataProvider">
+                        <option value="">Select Provider</option>
+                        <option value="MTN">MTN</option>
+                        <option value="Airtel">Airtel</option>
+                        <option value="Glo">Glo</option>
+                        <option value="9mobile">9Mobile</option>
+                    </select>
+                    <input type="tel" placeholder="Phone Number" class="input" id="dataPhone">
+                    <select name="package" class="input" id="dataPackage">
+                        <option value="">Select Package</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="currency-info">
+                        <span>Price: <span id="dataPriceNGN">0</span> NGN</span>
+                        <span>≈ <span id="dataPriceCrypto">0</span> <span id="selectedCurrency">USDT</span></span>
+                    </div>
+                    <select name="paymentMethod" class="input" id="dataPaymentMethod">
+                        <option value="USDT">Pay with USDT</option>
+                        <option value="TON">Pay with TON</option>
+                        <option value="NOTcoin">Pay with NOTcoin</option>
+                    </select>
+                    <button type="submit" class="btn">Buy Now</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Wallet Tab -->
+        <div id="wallet-tab" class="tab-content">
+            <div class="crypto-balance">
+                <h3>Your Balances</h3>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>USDT</p>
+                        <p id="usdtBalance">0.00</p>
+                    </div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>TON</p>
+                        <p id="tonBalance">0.00</p>
+                    </div>
+                </div>
+                <div class="balance-item">
+                    <div class="balance-container">
+                        <p>NOTcoin</p>
+                        <p id="notBalance">0.00</p>
+                    </div>
+                </div>
+                <div id="walletStatus">
+                    <p>Wallet Status: <span id="connectionStatus">Not Connected</span></p>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" id="connectWalletBtn">Connect Wallet</button>
+                    <button class="btn btn-outline" id="withdrawBtn">Withdraw</button>
+                </div>
+            </div>
+            <!-- Connect Wallet Options -->
+            <div id="connectWalletOptions" class="wallet-connect-form">
+                <h3>Connect Your Wallet</h3>
+                <div class="wallet-options">
+                    <div class="wallet-option" id="tonConnect">
+                        <img src="/api/placeholder/60/60" alt="TON Connect">
+                        <h3>TON Wallet</h3>
+                    </div>
+                    <div class="wallet-option" id="tonkeeperConnect">
+                        <img src="/api/placeholder/60/60" alt="Tonkeeper">
+                        <h3>Tonkeeper</h3>
+                    </div>
+                </div>
+            </div>
+            <!-- Deposit Form (shown after connecting wallet) -->
+            <div id="depositForm" class="wallet-connect-form">
+                <h3>Deposit Funds</h3>
+                <div class="deposit-form">
+                    <select id="depositCurrency" class="input">
+                        <option value="TON">TON</option>
+                        <option value="USDT">USDT</option>
+                        <option value="NOTcoin">NOTcoin</option>
+                    </select>
+                    <input type="number" id="depositAmount" placeholder="Amount" class="input">
+                    <button class="btn" id="confirmDepositBtn">Deposit</button>
+                </div>
+            </div>
+            <h3>Transaction History</h3>
+            <div class="transaction-history" id="transactionHistory">
+                <p>No transactions yet</p>
+            </div>
+        </div>
+
+        <!-- Referrals Tab -->
+        <div id="referrals-tab" class="tab-content">
+            <div id="referralConnectWallet" class="login-required">
+                <h3>Connect Wallet to Access Referrals</h3>
+                <p>You need to connect your wallet to generate and use referral codes.</p>
+                <button class="btn" id="referralConnectBtn">Connect Wallet</button>
+            </div>
+            <div id="referralContent" style="display: none;">
+                <div class="referral-card">
+                    <h3>Your Referral Code</h3>
+                    <div class="referral-code" id="userReferralCode">------</div>
+                    <p>Share this code with friends. When they sign up, you both earn points!</p>
+                    <button class="btn" id="shareBtn">Share Your Code</button>
+                </div>
+                <div class="referral-card">
+                    <h3>Referral Points</h3>
+                    <div class="points-display">
+                        <span id="pointsBalance">0</span> Points
+                    </div>
+                    <div class="referral-actions">
+                        <button class="btn" id="convertBtn">Convert Points</button>
+                        <button class="btn btn-outline" id="enterCodeBtn">Enter Code</button>
+                    </div>
+                    <div id="convertOptions" class="convert-options">
+                        <h4>Convert to:</h4>
+                        <select id="convertType" class="input">
+                            <option value="PLATFORM_CREDIT">Platform Credit</option>
+                            <option value="USDT">USDT</option>
+                            <option value="TON">TON</option>
+                            <option value="NOTcoin">NOTcoin</option>
+                        </select>
+                        <input type="number" id="pointsToConvert" placeholder="Amount of points" class="input">
+                        <button class="btn" id="confirmConvertBtn">Convert</button>
+                    </div>
+                    <div id="enterCode" class="convert-options">
+                        <h4>Enter Referral Code:</h4>
+                        <input type="text" id="referralCode" placeholder="Enter code" class="input">
+                        <button class="btn" id="confirmCodeBtn">Submit</button>
+                    </div>
+                </div>
+                <div class="referral-card">
+                    <h3>Your Referrals</h3>
+                    <div class="referral-list" id="referralsList">
+                        <p>You haven't referred anyone yet</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -48,125 +428,100 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Service package selection logic
-        document.getElementById('dataProvider').addEventListener('change', async function () {
-            const provider = this.value;
-            const packageSelect = document.getElementById('dataPackage');
-            packageSelect.innerHTML = '<option value="">Select Package</option>';
-
-            if (!provider) return;
-
-            try {
-                // Fetch packages from backend
-                const response = await fetch(`/api/packages?provider=${provider}`);
-                const packages = await response.json();
-
-                packages.forEach(pkg => {
-                    const option = document.createElement('option');
-                    option.value = pkg.PRODUCT_CODE;
-                    option.textContent = pkg.PRODUCT_NAME;
-                    option.setAttribute('data-price', pkg.PRODUCT_AMOUNT);
-                    packageSelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Error fetching packages:', error);
-                tg.showPopup({
-                    title: "Error",
-                    message: "Failed to load packages. Please try again later.",
-                    buttons: [{ type: "ok" }]
-                });
-            }
-        });
-
-        // Price update logic
-        document.getElementById('dataPackage').addEventListener('change', function () {
-            const selectedOption = this.options[this.selectedIndex];
-            const priceNGN = selectedOption.getAttribute('data-price');
-            const paymentMethod = document.getElementById('dataPaymentMethod').value;
-
-            document.getElementById('dataPriceNGN').textContent = priceNGN;
-            document.getElementById('dataPriceCrypto').textContent = convertNGNToCrypto(priceNGN, paymentMethod);
-            document.getElementById('selectedCurrency').textContent = paymentMethod;
-        });
-
-        document.getElementById('dataPaymentMethod').addEventListener('change', function () {
-            const priceNGN = document.getElementById('dataPriceNGN').textContent;
-            document.getElementById('dataPriceCrypto').textContent = convertNGNToCrypto(priceNGN, this.value);
-            document.getElementById('selectedCurrency').textContent = this.value;
-        });
-
-        // Handle form submission
-        document.getElementById('dataForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            const provider = document.getElementById('dataProvider').value;
-            const phone = document.getElementById('dataPhone').value;
-            const packageCode = document.getElementById('dataPackage').value;
-            const paymentMethod = document.getElementById('dataPaymentMethod').value;
-
-            if (!provider || !phone || !packageCode) {
-                tg.showPopup({
-                    title: "Missing Information",
-                    message: "Please fill in all required fields.",
-                    buttons: [{ type: "ok" }]
-                });
-                return;
-            }
-
-            try {
-                // Show processing popup
-                tg.showPopup({
-                    title: "Processing",
-                    message: "Please wait while we process your payment...",
-                    buttons: []
-                });
-
-                // Send request to backend
-                const response = await fetch('/api/buy-data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        mobileNetwork: provider,
-                        dataPlan: packageCode,
-                        mobileNumber: phone,
-                        paymentMethod
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.status === 'success') {
-                    tg.showPopup({
-                        title: "Success",
-                        message: "Your data purchase was successful!",
-                        buttons: [{ type: "ok" }]
-                    });
-                } else {
-                    tg.showPopup({
-                        title: "Error",
-                        message: result.message || "Failed to process your request.",
-                        buttons: [{ type: "ok" }]
-                    });
-                }
-            } catch (error) {
-                console.error('Error processing payment:', error);
-                tg.showPopup({
-                    title: "Error",
-                    message: "An unexpected error occurred. Please try again later.",
-                    buttons: [{ type: "ok" }]
-                });
-            }
-        });
+        // Mock exchange rates (in a real app, these would be fetched from an API)
+        const exchangeRates = {
+            TON: { NGN: 4200 },  // 1 TON = 4200 NGN
+            USDT: { NGN: 1550 }, // 1 USDT = 1550 NGN
+            NOTcoin: { NGN: 0.5 }  // 1 NOTcoin = 0.5 NGN
+        };
 
         // Helper function to convert NGN to crypto
         function convertNGNToCrypto(amountNGN, cryptoCurrency) {
-            const rates = {
-                USDT: 750, // Example rate: 1 USDT = 750 NGN
-                TON: 4000, // Example rate: 1 TON = 4000 NGN
-                NOTcoin: 0.5 // Example rate: 1 NOTcoin = 0.5 NGN
-            };
-            return (amountNGN / rates[cryptoCurrency]).toFixed(6);
+            if (!amountNGN || isNaN(amountNGN)) return 0;
+            const rate = exchangeRates[cryptoCurrency].NGN;
+            return (amountNGN / rate).toFixed(6);
         }
+
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+
+        // Wallet functionality
+        let walletState = {
+            connected: false,
+            address: '',
+            balances: { USDT: 0, TON: 0, NOTcoin: 0 },
+            referralCode: '',
+            referralPoints: 0,
+            transactions: []
+        };
+
+        document.getElementById('connectWalletBtn').addEventListener('click', function() {
+            document.getElementById('connectWalletOptions').style.display = 'block';
+        });
+
+        const walletOptions = document.querySelectorAll('.wallet-option');
+        walletOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Simulate wallet connection
+                tg.showPopup({
+                    title: "Connecting Wallet",
+                    message: "Please wait while we connect to your wallet...",
+                    buttons: []
+                });
+                setTimeout(() => {
+                    walletState.connected = true;
+                    walletState.address = '0x' + Math.random().toString(16).substring(2, 14);
+                    walletState.balances.USDT = parseFloat((Math.random() * 100).toFixed(2));
+                    walletState.balances.TON = parseFloat((Math.random() * 5).toFixed(2));
+                    walletState.balances.NOTcoin = parseFloat((Math.random() * 10000).toFixed(2));
+                    walletState.referralCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+                    walletState.referralPoints = Math.floor(Math.random() * 100);
+
+                    updateWalletDisplay();
+                    document.getElementById('connectWalletOptions').style.display = 'none';
+                    document.getElementById('depositForm').style.display = 'block';
+
+                    document.getElementById('referralConnectWallet').style.display = 'none';
+                    document.getElementById('referralContent').style.display = 'block';
+                    document.getElementById('userReferralCode').textContent = walletState.referralCode;
+                    document.getElementById('pointsBalance').textContent = walletState.referralPoints;
+
+                    tg.showPopup({
+                        title: "Wallet Connected",
+                        message: "Your wallet has been connected successfully!",
+                        buttons: [{type: "ok"}]
+                    });
+                }, 2000);
+            });
+        });
+
+        // Update wallet display
+        function updateWalletDisplay() {
+            document.getElementById('mainBalance').textContent = `${walletState.balances.USDT.toFixed(2)} USDT`;
+            document.getElementById('usdtBalance').textContent = walletState.balances.USDT.toFixed(2);
+            document.getElementById('tonBalance').textContent = walletState.balances.TON.toFixed(2);
+            document.getElementById('notBalance').textContent = walletState.balances.NOTcoin.toFixed(2);
+            const connectionStatus = document.getElementById('connectionStatus');
+            if (walletState.connected) {
+                connectionStatus.textContent = 'Connected';
+                connectionStatus.classList.add('connected-badge');
+            } else {
+                connectionStatus.textContent = 'Not Connected';
+                connectionStatus.classList.remove('connected-badge');
+            }
+        }
+
+        // Add other functionalities as needed (e.g., deposit, withdrawal, referrals, etc.)
     </script>
 </body>
 </html>
