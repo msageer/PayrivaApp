@@ -3,199 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payriva User Interface</title>
+    <title>Payriva Digital Services</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            color: var(--tg-theme-text-color, #000);
+            background: var(--tg-theme-bg-color, #fff);
         }
         .container {
-            max-width: 600px;
+            max-width: 390px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
+        .header {
+            text-align: center;
             margin-bottom: 5px;
         }
-        .form-group select, .form-group input {
-            width: 100%;
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .ads-panel {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            cursor: pointer;
+        }
+        .tab.active {
+            border-bottom: 2px solid var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-color, #2481cc);
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .service-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .service-card:hover {
+            transform: translateY(-3px);
+        }
+        .service-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .service-card.coming-soon {
+            opacity: 0.7;
+            position: relative;
+        }
+        .coming-soon-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: #fff;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 10px;
         }
         .btn {
-            width: 100%;
-            padding: 10px;
-            background: #2481cc;
-            color: white;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
             cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
         }
         .btn:hover {
-            background: #1a68a3;
+            background: var(--tg-theme-button-color, #1a68a3);
         }
-        .packages {
-            margin-top: 20px;
+        .btn-outline {
+            background: transparent;
+            color: var(--tg-theme-button-color, #2481cc);
+            border: 1px solid var(--tg-theme-button-color, #2481cc);
         }
-        .package-item {
-            background: #f9f9f9;
-            padding: 10px;
+        .service-detail {
+            display: none;
+        }
+        .crypto-balance {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input {
+            width: 100%;
+            padding: 12px;
             margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
         }
-        .package-item.selected {
-            background: #d1e7fd;
-            border-color: #2481cc;
+        .referral-card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .referral-code {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 5px;
+        }
+        .points-display {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .referral-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .convert-options {
+            display: none;
+            margin-top: 15px;
+        }
+        .referral-list {
+            margin-top: 15px;
+        }
+        .wallet-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .wallet-option {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .wallet-option:hover {
+            transform: translateY(-3px);
+        }
+        .wallet-option img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        .wallet-connect-form {
+            display: none;
+            margin-top: 15px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+        }
+        .deposit-form {
+            margin-top: 15px;
+        }
+        .connected-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .currency-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+        .login-required {
+            text-align: center;
+            padding: 30px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Select Service</h2>
-
-        <!-- Service Selection -->
-        <div class="form-group">
-            <label for="serviceType">Service Type</label>
-            <select id="serviceType" class="input">
-                <option value="dataBundles">Mobile Data</option>
-                <option value="airtime">Airtime</option>
-                <option value="tvPackages">TV Subscription</option>
-                <option value="electricity">Electricity Bill</option>
-            </select>
+        <div class="header">
+            <img src="/api/placeholder/150/50" alt="Payriva Logo" class="logo">
         </div>
-
-        <!-- Provider Selection -->
-        <div class="form-group">
-            <label for="provider">Provider</label>
-            <select id="provider" class="input">
-                <option value="mtn">MTN</option>
-                <option value="airtel">Airtel</option>
-                <option value="glo">Glo</option>
-                <option value="9mobile">9Mobile</option>
-                <option value="dstv">DSTV</option>
-                <option value="gotv">GOTV</option>
-                <option value="startimes">StarTimes</option>
-                <option value="eko-electricity">Eko Electricity</option>
-                <option value="ikedc">IKEDC</option>
-            </select>
+        <div class="ads-panel">
+            Buy airtime, data, and pay bills with TON, USDT, and NOTcoin. Fast and secure!
         </div>
-
-        <!-- Packages -->
-        <div class="packages" id="packagesContainer">
-            <p>Select a service and provider to view available packages.</p>
+        <div class="tab-container">
+            <div class="tab active" data-tab="services">Services</div>
+            <div class="tab" data-tab="wallet">Wallet</div>
+            <div class="tab" data-tab="referrals">Referrals</div>
         </div>
-
-        <!-- Payment Details -->
-        <div class="form-group">
-            <label for="paymentMethod">Payment Method</label>
-            <select id="paymentMethod" class="input">
-                <option value="USDT">USDT</option>
-                <option value="TON">TON</option>
-                <option value="NOTcoin">NOTcoin</option>
-            </select>
-        </div>
-
-        <button class="btn" id="purchaseBtn">Purchase</button>
-    </div>
-
-    <script>
-        let selectedPackage = null;
-
-        // Fetch service packages dynamically
-        async function fetchServicePackages(serviceType, provider) {
-            const response = await fetch(`/api/services?type=${serviceType}&provider=${provider}`);
-            if (!response.ok) {
-                alert('Failed to fetch service packages.');
-                return [];
-            }
-            const data = await response.json();
-            return data.packages || [];
-        }
-
-        // Render service packages
-        function renderPackages(packages) {
-            const container = document.getElementById('packagesContainer');
-            container.innerHTML = ''; // Clear previous packages
-
-            if (packages.length === 0) {
-                container.innerHTML = '<p>No packages available for this service and provider.</p>';
-                return;
-            }
-
-            packages.forEach(pkg => {
-                const div = document.createElement('div');
-                div.className = 'package-item';
-                div.textContent = `${pkg.name} - ₦${pkg.price}`;
-                div.onclick = () => {
-                    // Highlight selected package
-                    document.querySelectorAll('.package-item').forEach(item => item.classList.remove('selected'));
-                    div.classList.add('selected');
-                    selectedPackage = pkg;
-                };
-                container.appendChild(div);
-            });
-        }
-
-        // Handle service type or provider change
-        document.getElementById('serviceType').addEventListener('change', loadPackages);
-        document.getElementById('provider').addEventListener('change', loadPackages);
-
-        async function loadPackages() {
-            const serviceType = document.getElementById('serviceType').value;
-            const provider = document.getElementById('provider').value;
-
-            if (!serviceType || !provider) {
-                return;
-            }
-
-            const packages = await fetchServicePackages(serviceType, provider);
-            renderPackages(packages);
-        }
-
-        // Handle purchase button click
-        document.getElementById('purchaseBtn').addEventListener('click', async () => {
-            if (!selectedPackage) {
-                alert('Please select a package.');
-                return;
-            }
-
-            const paymentMethod = document.getElementById('paymentMethod').value;
-
-            const response = await fetch('/purchase', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: 'user123', // Replace with actual user ID
-                    serviceType: document.getElementById('serviceType').value,
-                    details: {
-                        amountNGN: selectedPackage.price,
-                        paymentMethod: paymentMethod
-                    }
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                alert(`Purchase successful! You used ${result.transaction.amount}. Updated balance: ${JSON.stringify(result.updatedBalance)}`);
-            } else {
-                alert(`Error: ${result.error}`);
-            }
-        });
-
-        // Initial load
-        loadPackages();
-    </script>
-</body>
-</html>
+        <!-- Services Tab -->
+        <div id="services-tab" class="tab-content active">
+            <div class="crypto-balance">
+                <div class="balance-container">
+                    <div>
+                        <h3>Wallet Balance</h3>
+                        <p id="mainBalance">0.00 USDT</p>
+                    </div>
+                    <button class="btn" id="topupBtn">Top Up</button>
+                </div>
+            </div>
+            <div class="services">
+                <div class="service-card" data-service="data">
+                    <img src="/api/placeholder/50/50" alt="Mobile Data">
+                    <h3>Mobile Data</h3>
+                </div>
+                <div class="service-card" data-service="airtime">
+                    <img src="/api/placeholder/50/50" alt="Airtime">
+                    <h3>Airtime</h3>
+                </div>
+                <div class="service-card" data-service="electricity">
+                    <img src="/api/placeholder/50/50" alt="Electricity">
+                    <h3>Electricity</h3>
+                </div>
+                <div class="service-card" data-service="tv">
+                    <img src="/api/placeholder/50/50" alt="TV Subscription">
+                    <h3>TV Subscription</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="Crypto Swap">
+                    <h3>Crypto Swap</h3>
+                </div>
+                <div class="service-card coming-soon">
+                    <span class="coming-soon-badge">Coming Soon</span>
+                    <img src="/api/placeholder/50/50" alt="P2P Trading">
+                    <h3>P2P Trading</h3>
+                </div>
+            </div>
+            <!-- Service Detail Sections -->
+            <div id="dataService" class="service-detail">
+                <h2>Buy Mobile Data</h2>
+                <form id="dataForm">
+                    <select name="provider" class="input" id="dataProvider">
+                        <option value="">Select Provider</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <input type="tel" placeholder="Phone Number" class="input" id="dataPhone">
+                    <select name="package" class="input" id="dataPackage">
+                        <option value="">Select Package</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="currency-info">
+                        <span>Price: <span id="dataPriceNGN">0</span> NGN</span>
+                        <span>≈ <span id="dataPriceCrypto">0</span> <span id="selectedCurrency">USDT</span></span>
+                    </div>
+                    <select name="paymentMethod" class="input" id="dataPaymentMethod">
+                        <option value="USDT">Pay with USDT</option>
+                        <option value="TON">Pay with TON</option>
+                        <option value="NOTcoin">Pay with NOTcoin</option>
+                    </select>
+                    <button type="submit" class="btn">Buy Now</button>
+                </form>
+            </div>
+            <div id="airtimeService" class="service-detail">
+                <h2>Buy Airtime</h2>
+                <form id="airtimeForm">
+                    <select name="provider" class="input" id="airtimeProvider">
+                        <option value="">Select Provider</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <input type="tel" placeholder="Phone Number" class="input" id="airtimePhone">
+                    <input type="number" placeholder="Amount (NGN)" class="input" id="airtimeAmount">
+                    <div class="currency-info">
+                        <span>Price: <span id="airtimePriceNGN">0</span> NGN</span>
+                        <span>≈ <span id="airtimePriceCrypto">0</span> <span id="airtimeSelectedCurrency">USDT</span></span>
+                    </div>
+                    <select name="paymentMethod" class="input" id="airtimePaymentMethod">
+                        <option value="USDT">Pay with USDT</option>
+                        <option value="TON
