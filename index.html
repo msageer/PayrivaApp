@@ -252,6 +252,10 @@
                 </div>
             </div>
             <div class="services">
+                <div class="service-card" data-service="data">
+                    <img src="/api/placeholder/50/50" alt="Mobile Data">
+                    <h3>Mobile Data</h3>
+                </div>
                 <div class="service-card" data-service="airtime">
                     <img src="/api/placeholder/50/50" alt="Airtime">
                     <h3>Airtime</h3>
@@ -274,6 +278,34 @@
                     <img src="/api/placeholder/50/50" alt="P2P Trading">
                     <h3>P2P Trading</h3>
                 </div>
+            </div>
+            <!-- Service Detail Sections -->
+            <div id="dataService" class="service-detail">
+                <h2>Buy Mobile Data</h2>
+                <form id="dataForm">
+                    <select name="provider" class="input" id="dataProvider">
+                        <option value="">Select Provider</option>
+                        <option value="mtn">MTN</option>
+                        <option value="airtel">Airtel</option>
+                        <option value="glo">Glo</option>
+                        <option value="9mobile">9Mobile</option>
+                    </select>
+                    <input type="tel" placeholder="Phone Number" class="input" id="dataPhone">
+                    <select name="package" class="input" id="dataPackage">
+                        <option value="">Select Package</option>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="currency-info">
+                        <span>Price: <span id="dataPriceNGN">0</span> NGN</span>
+                        <span>≈ <span id="dataPriceCrypto">0</span> <span id="selectedCurrency">USDT</span></span>
+                    </div>
+                    <select name="paymentMethod" class="input" id="dataPaymentMethod">
+                        <option value="USDT">Pay with USDT</option>
+                        <option value="TON">Pay with TON</option>
+                        <option value="NOTcoin">Pay with NOTcoin</option>
+                    </select>
+                    <button type="submit" class="btn">Buy Now</button>
+                </form>
             </div>
             <div id="airtimeService" class="service-detail">
                 <h2>Buy Airtime</h2>
@@ -401,7 +433,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Deposit Form -->
+            <!-- Deposit Form (shown after connecting wallet) -->
             <div id="depositForm" class="wallet-connect-form">
                 <h3>Deposit Funds</h3>
                 <div class="deposit-form">
@@ -456,34 +488,4 @@
                     </div>
                     <div id="enterCode" class="convert-options">
                         <h4>Enter Referral Code:</h4>
-                        <input type="text" id="referralCode" placeholder="Enter code" class="input">
-                        <button class="btn" id="confirmCodeBtn">Submit</button>
-                    </div>
-                </div>
-                <div class="referral-card">
-                    <h3>Your Referrals</h3>
-                    <div class="referral-list" id="referralsList">
-                        <p>You haven't referred anyone yet</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        // Initialize Telegram WebApp
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Mock exchange rates (in a real app, these would be fetched from an API)
-        const exchangeRates = {
-            TON: { NGN: 4200 },  // 1 TON = 4200 NGN
-            USDT: { NGN: 1550 }, // 1 USDT = 1550 NGN
-            NOTcoin: { NGN: 0.5 }  // 1 NOTcoin = 0.5 NGN
-        };
-
-        // Service packages data (mock data for now)
-        const serviceData = {
-            tvPackages: {
-                dstv: [
-                    { name: "Access", price: 2000, value: "access" },
-                    { name
+                        <input type="text"
